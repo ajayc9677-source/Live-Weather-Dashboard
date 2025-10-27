@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Weather Broadcast</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #6ab7ff, #e0f7fa);
+            text-align: center;
+            padding-top: 50px;
+            color: #03396c;
+        }
+        h1 {
+            font-size: 2.5rem;
+        }
+        .weather {
+            font-size: 1.5rem;
+            margin-top: 20px;
+        }
+        button {
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: #0277bd;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #01579b;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌤 Live Weather Broadcast</h1>
+    <div class="weather" id="weather"></div>
+    <button onclick="broadcastWeather()">🎙 Broadcast</button>
+
+    <script>
+        async function fetchWeather() {
+            const res = await fetch('/weather');
+            const data = await res.json();
+            const text = `
+                Location: ${data.city}  
+                Temperature: ${data.temperature}°C  
+                Condition: ${data.condition}  
+                Humidity: ${data.humidity}%  
+                Wind: ${data.wind_speed} m/s
+            `;
+            document.getElementById('weather').innerText = text;
+            return data;
+        }
+
+        async function broadcastWeather() {
+            const data = await fetchWeather();
+            const message = `Good day! This is your live weather update for ${data.city}. 
+                The temperature is ${data.temperature} degrees Celsius, 
+                with ${data.condition}. 
+                Humidity is at ${data.humidity} percent, 
+                and winds are blowing at ${data.wind_speed} meters per second.`;
+
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.lang = 'en-US';
+            speechSynthesis.speak(utterance);
+        }
+
+        fetchWeather();
+    </script>
+</body>
+</html>
